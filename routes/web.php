@@ -1,5 +1,5 @@
 <?php
-
+use App\PagSeguro\PagSeguro;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,40 +10,44 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
 });
-
-
-
-Route::get('/checkout/{id}', function ($id) {
-    return view('store.checkout', compact('id'));
+Route::get('/checkout/success', function () {
+    return 'Pagamento efetuado com sucesso!';
 });
-
-Route::post('/checkout/{id}', function ($id) {
-    $data = request()->all;
-    unset($data['_token']);
-
+Route::get('/checkout/{id}', function ($id) {
+    $data = [];
     $data['email'] = 'jailton.dantass@gmail.com';
-    $data['token'] = '';
+    $data['token'] = 'E27855C7DD45439582A3879AD75D3283';
+
+    $response = (new PagSeguro)->request(PagSeguro::SESSION_SANDBOX, $data);
+    $session = new \SimpleXMLElement($response->getContents());
+    $session = $session->id;
+    $amount = number_format(521.50, 2, '.', '');
+    return view('store.checkout', compact('id', 'session', 'amount'));
+});
+Route::post('/checkout/{id}', function ($id) {
+    $data = request()->all();
+    unset($data['_token']);
+    $data['email'] = 'jailton.dantass@gmail.com';
+    $data['token'] = 'E27855C7DD45439582A3879AD75D3283';
     $data['paymentMode'] = 'default';
     $data['paymentMethod'] = 'creditCard';
-    $data['recceiverEmail'] = '';
+    $data['receiverEmail'] = 'jailton.dantass@gmail.com';
     $data['currency'] = 'BRL';
-
-/*    $key = 1;
-    foreach ($pedido->products as $produto) {
-        $data['itemId' . $key] = $produto->id;
-        $data['itemDescription'. $key] = $produto->title;
-        $data['itemAmount'. $key] = number_format($produto->value, 2, '.', '');
-        $data['itemQuantity'. $key] = $produto->qtd;
-    }
-**/
-
     $data['senderAreaCode'] = substr($data['senderPhone'], 0, 2);
     $data['senderPhone'] = substr($data['senderPhone'], 2, strlen($data['senderPhone']));
-
-    return $data;
+    $data['creditCardHolderAreaCode'] = substr($data['creditCardHolderPhone'], 0, 2);
+    $data['creditCardHolderPhone'] = substr($data['creditCardHolderPhone'], 2, strlen($data['creditCardHolderPhone']));
+    $data['installmentValue'] = number_format($data['installmentValue'], 2, '.', '');
+    $data['shippingAddressCountry'] = 'BR';
+    $data['billingAddressCountry'] = 'BR';
+    try {
+        $response = (new PagSeguro)->request(PagSeguro::CHECKOUT_SANDBOX, $data);
+    } catch (\Exception $e) {
+        dd($e->getMessage());
+    }
+    //return $data;
+    return ['status'=>'success'];
 });
-
