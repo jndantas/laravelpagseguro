@@ -235,7 +235,9 @@
         brand: '',
         amount: {{ $amount }},
     }
+    
     PagSeguroDirectPayment.setSessionId('{!! $session !!}');
+    
     pagSeguro.getPaymentMethods(paymentData.amount)
         .then(function (urls) {
             let html = '';
@@ -250,6 +252,7 @@
             $('#senderHash').val(data);
         })
     });
+    
     $('#shippingAddressPostalCode').on('keyup', function () {
         let cep = $(this).val();
         if (cep.length == 8) {
@@ -263,6 +266,7 @@
                 })
         }
     });
+    
     $('#cardNumber').on('keyup', function() {
         if ($(this).val().length >= 6) {
             let bin = $(this).val();
@@ -286,6 +290,7 @@
                 })
         }
     });
+    
     $('#form').on('submit', function (e) {
         e.preventDefault();
         let params = {
@@ -305,6 +310,7 @@
             });
         });
     });
+    
     let toggle = function(element, verification, callbackShow, callbackHide) {
         if (!verification.is(':checked')) {
             $(element).show();
@@ -314,6 +320,7 @@
             callbackHide();
         }
     }
+    
     let holderShow = function () {
         $('#creditCardHolderName').val('');
         $('#creditCardHolderCPF').val('');
@@ -333,6 +340,7 @@
         $('#billingAddressCity').val('');
         $('#billingAddressState').val('');
     }
+    
     let shippingHide = function () {
         $('#billingAddressPostalCode').val($('#shippingAddressPostalCode').val());
         $('#billingAddressStreet').val($('#shippingAddressStreet').val());
@@ -350,5 +358,6 @@
     $('#copy_from_shipping').on('change', function() {
         toggle('#shipping_data', $(this), shippingShow, shippingHide)
     });
+    
 </script>
 @endsection

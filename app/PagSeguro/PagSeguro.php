@@ -41,14 +41,17 @@ class PagSeguro
     {
         $request = $this->requests[$url];
         $url = $request['url'];
+        
         if ($request['options']['withBody']) {
             $options['form_params'] = $data;
         } else {
             $url = $url . '?' . http_build_query($data);
             $options = [];
         }
+        
         $client = new Client;
         $response = $client->request($request['method'], $url, $options);
+        
         return $response->getBody();
     }
 }
