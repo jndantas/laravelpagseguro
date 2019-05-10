@@ -14,6 +14,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/boleto', function () {
+    return view('store.boleto');
+});
+
+Route::get('/boleto_action', 'ControladorPagseguro@action_boleto')->name('boleto_action');
+
 Route::get('/checkout/success', function () {
     return 'Pagamento efetuado com sucesso!';
 });
@@ -30,7 +36,7 @@ Route::get('/checkout/{id}', function ($id) {
     return view('store.checkout', compact('id', 'session', 'amount'));
 });
 
-Route::post('/checkout/{id}', function ($id) 
+Route::post('/checkout/{id}', function ($id)
 {
     $data = request()->all();
     unset($data['_token']);
@@ -40,17 +46,17 @@ Route::post('/checkout/{id}', function ($id)
     $data['paymentMethod'] = 'creditCard';
     $data['receiverEmail'] = 'jailton.dantass@gmail.com';
     $data['currency'] = 'BRL';
-    
+
     $data['senderAreaCode'] = substr($data['senderPhone'], 0, 2);
     $data['senderPhone'] = substr($data['senderPhone'], 2, strlen($data['senderPhone']));
-    
+
     $data['creditCardHolderAreaCode'] = substr($data['creditCardHolderPhone'], 0, 2);
     $data['creditCardHolderPhone'] = substr($data['creditCardHolderPhone'], 2, strlen($data['creditCardHolderPhone']));
-    
+
     $data['installmentValue'] = number_format($data['installmentValue'], 2, '.', '');
     $data['shippingAddressCountry'] = 'BR';
     $data['billingAddressCountry'] = 'BR';
-    
+
     try {
         $response = (new PagSeguro)->request(PagSeguro::CHECKOUT_SANDBOX, $data);
     } catch (\Exception $e) {

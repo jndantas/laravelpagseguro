@@ -19,7 +19,7 @@ return [
     | Conta de email do Vendedor.
     |
     */
-    'email' => env('PAGSEGURO_EMAIL', ''),
+    'email' => env('PAGSEGURO_EMAIL', 'jailton.dantass@gmail.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ return [
     | Token do Vendedor.
     |
     */
-    'token' => env('PAGSEGURO_TOKEN', ''),
+    'token' => env('PAGSEGURO_TOKEN', 'E27855C7DD45439582A3879AD75D3283'),
 
     /*
     |--------------------------------------------------------------------------
